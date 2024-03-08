@@ -81,6 +81,28 @@ export const exchange = (state = { loaded: false, contract: {} }, action) => {
                 ...state,
                 balances: [...state.balances, action.balance]
             }
+        case 'TRANSFER_IN_PROGRESS':
+            return {
+                ...state,
+                status: "Transfer in progress",
+                isPending: true,
+                isSuccessful: false
+            }
+        case 'TRANSFER_SUCCESSFUL':
+            return {
+                ...state,
+                status: "Transfer successful",
+                isPending: false,
+                isSuccessful: true
+            }
+        case 'TRANSFER_FAILED':
+            return {
+                ...state,
+                status: "Transfer failed",
+                isPending: false,
+                isSuccessful: false,
+                isError: true
+            }
         default:
             return state
     }

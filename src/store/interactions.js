@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import TOKEN_ABI from '../abis/ComradeToken.json'
 import EXCHANGE_ABI from '../abis/Exchange.json'
-import { provider } from './reducers'
+import { exchange, provider } from './reducers'
 
 export const loadProvider = async (dispatch) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -51,6 +51,17 @@ export const loadExchange = async (provider, address, dispatch) => {
     return exchange
 }
 
+export const subscribeToEvents = (provider, exchangeAddress, dispatch) => {
+
+    let exchangeContract = new ethers.Contract(exchangeAddress, EXCHANGE_ABI, provider)
+
+    exchangeContract.on('TokensDeposited', (token, user, amount) => {
+        console.log("hi")
+        dispatch({ type: 'TRANSFER_SUCCESSFUL' })
+    })
+
+}
+
 export const loadBalances = async (provider, exchange, tokens, account, dispatch) => {
     if (tokens[0]) {
 
@@ -76,17 +87,25 @@ export const loadBalances = async (provider, exchange, tokens, account, dispatch
 }
 
 export const depositTokens = async (provider, exchange, transferType, token, amount, dispatch) => {
-    let tokenContract = new ethers.Contract(token, TOKEN_ABI, provider)
-    let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
 
-    const signer = await provider.getSigner()
+    dispatch({ type: "TRANSFER_IN_PROGRESS" })
 
-    let tx = await tokenContract.connect(signer).approve(exchange, amount)
-    await tx.wait()
+    try {
+        let tokenContract = new ethers.Contract(token, TOKEN_ABI, provider)
+        let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
 
-    tx = await exchangeContract.connect(signer).depositTokens(token, amount)
-    await tx.wait()
+        const signer = await provider.getSigner()
 
-    console.log("Tokens deposited.")
-    console.log(ethers.utils.formatUnits(await exchangeContract.depositedAmount(token, await signer.getAddress()), 18))
+        let tx = await tokenContract.connect(signer).approve(exchange, amount)
+        await tx.wait()
+
+        tx = await exchangeContract.connect(signer).depositTokens(token, amount)
+        await tx.wait()
+
+        console.log("Tokens deposited.")
+        console.log(ethers.utils.formatUnits(await exchangeContract.depositedAmount(token, await signer.getAddress()), 18))
+
+    } catch (error) {
+        dispatch({ type: 'TRANSFER_FAILED' })
+    }
 }
