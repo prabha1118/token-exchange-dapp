@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadProvider, loadBalances, depositTokens } from '../store/interactions';
+import { loadProvider, loadBalances, depositTokens, withdrawTokens } from '../store/interactions';
 
 import dapp from '../assets/dapp.svg';
 import eth from '../assets/eth.svg';
@@ -58,6 +58,22 @@ const Balance = () => {
         } else {
             const provider = await loadProvider(dispatch);
             depositTokens(provider, exchange, "Deposit", token, token2TransferAmount, dispatch)
+
+            setToken2TransferAmount(0);
+        }
+    }
+
+    const withdrawHandler = async (e, token) => {
+        e.preventDefault();
+        console.log("withdrawing...")
+        if (token === tokens[0]) {
+            const provider = await loadProvider(dispatch);
+            withdrawTokens(provider, exchange, "Withdraw", token, token1TransferAmount, dispatch)
+
+            setToken1TransferAmount(0);
+        } else {
+            const provider = await loadProvider(dispatch);
+            withdrawTokens(provider, exchange, "Withdraw", token, token2TransferAmount, dispatch)
 
             setToken2TransferAmount(0);
         }
@@ -129,7 +145,7 @@ const Balance = () => {
                     <p><small>Exchange</small><br />{e_balances && e_balances[0]}</p>
                 </div>
 
-                <form onSubmit={(e) => depositHandler(e, tokens[0])}>
+                <form onSubmit={isDeposit ? (e) => depositHandler(e, tokens[0]) : (e) => withdrawHandler(e, tokens[0])}>
                     <label htmlFor="token0">{t_symbols && t_symbols[0]} Amount</label>
                     <input
                         type="text"
@@ -159,7 +175,7 @@ const Balance = () => {
                     <p><small>Exchange</small><br />{e_balances && e_balances[1]}</p>
                 </div>
 
-                <form onSubmit={(e) => depositHandler(e, tokens[1])}>
+                <form onSubmit={isDeposit ? (e) => depositHandler(e, tokens[1]) : (e) => withdrawHandler(e, tokens[1])}>
                     <label htmlFor="token0">{t_symbols && t_symbols[1]} Amount</label>
                     <input
                         type="text"

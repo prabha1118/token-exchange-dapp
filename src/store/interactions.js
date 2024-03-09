@@ -56,10 +56,12 @@ export const subscribeToEvents = (provider, exchangeAddress, dispatch) => {
     let exchangeContract = new ethers.Contract(exchangeAddress, EXCHANGE_ABI, provider)
 
     exchangeContract.on('TokensDeposited', (token, user, amount) => {
-        console.log("hi")
         dispatch({ type: 'TRANSFER_SUCCESSFUL' })
     })
 
+    exchangeContract.on('TokensWithdrawn', (token, user, amount) => {
+        dispatch({ type: 'TRANSFER_SUCCESSFUL' })
+    })
 }
 
 export const loadBalances = async (provider, exchange, tokens, account, dispatch) => {
@@ -105,6 +107,25 @@ export const depositTokens = async (provider, exchange, transferType, token, amo
 
         console.log("Tokens deposited.")
         console.log(ethers.utils.formatUnits(await exchangeContract.depositedAmount(token, await signer.getAddress()), 18))
+
+    } catch (error) {
+        dispatch({ type: 'TRANSFER_FAILED' })
+    }
+}
+
+export const withdrawTokens = async (provider, exchange, transferType, token, amount, dispatch) => {
+
+    dispatch({ type: "TRANSFER_IN_PROGRESS" })
+
+    try {
+        let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
+
+        const signer = await provider.getSigner()
+
+        let tx = await exchangeContract.connect(signer).withdrawTokens(token, amount)
+        await tx.wait()
+
+        console.log("Tokens withdrawn.")
 
     } catch (error) {
         dispatch({ type: 'TRANSFER_FAILED' })
