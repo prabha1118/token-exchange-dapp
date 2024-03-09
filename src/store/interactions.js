@@ -69,16 +69,17 @@ export const loadBalances = async (provider, exchange, tokens, account, dispatch
         let balance = ethers.utils.formatUnits(await token.balanceOf(account), 18)
         dispatch({ type: 'CMRD_TOKEN_BALANCE_LOADED', balance })
 
-        let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
-        balance = ethers.utils.formatUnits(await exchangeContract.depositedAmount(tokens[0], account), 18)
-        dispatch({ type: 'EXCHANGE_CMRD_TOKEN_BALANCE_LOADED', balance })
-
         token = new ethers.Contract(tokens[1], TOKEN_ABI, provider)
         balance = ethers.utils.formatUnits(await token.balanceOf(account), 18)
         dispatch({ type: 'OTHER_TOKEN_BALANCE_LOADED', balance })
 
+        let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
+
+        balance = ethers.utils.formatUnits(await exchangeContract.depositedAmount(tokens[0], account), 18)
+        dispatch({ type: 'EXCHANGE_CMRD_TOKEN_BALANCE_LOADED', balance })
+
         balance = ethers.utils.formatUnits(await exchangeContract.depositedAmount(tokens[1], account), 18)
-        dispatch({ type: 'EXCHANGE_OTHER_TOKEN_BALANCE_LOADED ', balance })
+        dispatch({ type: 'EXCHANGE_OTHER_TOKEN_BALANCE_LOADED', balance })
 
     } else {
         console.error("Tokens data not loaded yet.");
