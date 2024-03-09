@@ -33,6 +33,8 @@ contract Exchange {
         uint256 timestamp;
     }
 
+    event TokensDeposited(address _token, address _depositer, uint256 _amount);
+
     event Order(
         uint256 id,
         address user,
@@ -82,6 +84,8 @@ contract Exchange {
 
         tokensDeposited[_token][msg.sender] += _amount;
         ERC20(_token).transferFrom(_depositer, address(this), _amount);
+
+        emit TokensDeposited(_token, msg.sender, _amount);
     }
 
     function withdrawTokens(address _token, uint256 _amount) public {

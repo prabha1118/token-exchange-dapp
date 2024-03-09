@@ -7,7 +7,8 @@ import {
   loadNetwork,
   loadAccount,
   loadTokens,
-  loadExchange
+  loadExchange,
+  subscribeToEvents
 } from '../store/interactions'
 
 import Navbar from './Navbar';
@@ -49,6 +50,9 @@ function App() {
     // Load the Exchange contract
     const exchangeAddress = HelperConfig[chainId].exchangeAddress
     await loadExchange(provider, exchangeAddress, dispatch)
+
+    // Listen to Events
+    subscribeToEvents(provider, exchangeAddress, dispatch);
   }
 
   useEffect(() => {
