@@ -62,6 +62,12 @@ export const subscribeToEvents = (provider, exchangeAddress, dispatch) => {
     exchangeContract.on('TokensWithdrawn', (token, user, amount) => {
         dispatch({ type: 'TRANSFER_SUCCESSFUL' })
     })
+
+    exchangeContract.on('Order', (orderId, user, tokenGet, amountGet, tokenGive, amountGive, timestamp) => {
+        dispatch({ type: 'NEW_ORDER_SUCCESSFULL', orderId: orderId.toString(), user: user.toString(), tokenGet: (tokenGet.toString()), amountGet: (amountGet.toString()), tokenGive: (tokenGive.toString()), amountGive: (amountGive.toString()) })
+        // dispatch({ type: 'NEW_ORDER_SUCCESSFULL', orderId, user, tokenGet, amountGet, tokenGive, amountGive, timestamp })
+
+    })
 }
 
 export const loadBalances = async (provider, exchange, tokens, account, dispatch) => {
@@ -97,12 +103,14 @@ export const depositTokens = async (provider, exchange, transferType, token, amo
         let tokenContract = new ethers.Contract(token, TOKEN_ABI, provider)
         let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
 
+        let amountToDeposit = ethers.utils.parseUnits(amount.toString(), 18)
+
         const signer = await provider.getSigner()
 
-        let tx = await tokenContract.connect(signer).approve(exchange, amount)
+        let tx = await tokenContract.connect(signer).approve(exchange, amountToDeposit)
         await tx.wait()
 
-        tx = await exchangeContract.connect(signer).depositTokens(token, amount)
+        tx = await exchangeContract.connect(signer).depositTokens(token, amountToDeposit)
         await tx.wait()
 
         console.log("Tokens deposited.")
@@ -120,14 +128,60 @@ export const withdrawTokens = async (provider, exchange, transferType, token, am
     try {
         let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
 
+        let amountToWithdraw = ethers.utils.parseUnits(amount.toString(), 18)
+
         const signer = await provider.getSigner()
 
-        let tx = await exchangeContract.connect(signer).withdrawTokens(token, amount)
+        let tx = await exchangeContract.connect(signer).withdrawTokens(token, amountToWithdraw)
         await tx.wait()
 
         console.log("Tokens withdrawn.")
 
     } catch (error) {
         dispatch({ type: 'TRANSFER_FAILED' })
+    }
+}
+
+export const makeBuyOrder = async (provider, exchange, tokens, order, dispatch) => {
+
+    const tokenGet = tokens[0]
+    const amountGet = ethers.utils.parseUnits(order.amount.toString(), 18)
+    const tokenGive = tokens[1]
+    const amountGive = ethers.utils.parseUnits((order.amount * order.price).toString(), 18)
+
+    dispatch({ type: 'NEW_ORDER_REQUEST' })
+    console.log('hi')
+
+    try {
+        const signer = await provider.getSigner()
+
+        let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
+
+        let tx = await exchangeContract.connect(signer).makeOrder(tokenGet, amountGet, tokenGive, amountGive)
+        await tx.wait()
+    } catch (error) {
+        dispatch({ type: 'NEW_ORDER_FAILED' })
+    }
+}
+
+export const makeSellOrder = async (provider, exchange, tokens, order, dispatch) => {
+
+    const tokenGet = tokens[1]
+    const amountGet = ethers.utils.parseUnits((order.amount * order.price).toString(), 18)
+    const tokenGive = tokens[0]
+    const amountGive = ethers.utils.parseUnits(order.amount, 18)
+
+    dispatch({ type: 'NEW_ORDER_REQUEST' })
+    console.log('hi2')
+
+    try {
+        const signer = await provider.getSigner()
+
+        let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
+
+        let tx = await exchangeContract.connect(signer).makeOrder(tokenGet, amountGet, tokenGive, amountGive)
+        await tx.wait()
+    } catch (error) {
+        dispatch({ type: 'NEW_ORDER_FAILED' })
     }
 }

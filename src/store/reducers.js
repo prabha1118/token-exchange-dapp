@@ -63,7 +63,7 @@ export const tokens = (state = { loaded: false, contracts: [], symbols: [] }, ac
     }
 }
 
-export const exchange = (state = { loaded: false, contract: {} }, action) => {
+export const exchange = (state = { loaded: false, contract: {}, allOrders: [] }, action) => {
     switch (action.type) {
         case 'EXCHANGE_LOADED':
             return {
@@ -81,6 +81,8 @@ export const exchange = (state = { loaded: false, contract: {} }, action) => {
                 ...state,
                 balances: [...state.balances, action.balance]
             }
+
+
         case 'TRANSFER_IN_PROGRESS':
             return {
                 ...state,
@@ -99,6 +101,42 @@ export const exchange = (state = { loaded: false, contract: {} }, action) => {
             return {
                 ...state,
                 status: "Transfer failed",
+                isPending: false,
+                isSuccessful: false,
+                isError: true
+            }
+
+
+        case 'NEW_ORDER_REQUEST':
+            return {
+                ...state,
+                status: "New Order request",
+                isPending: true,
+                isSuccessful: false
+            }
+        case 'NEW_ORDER_SUCCESSFULL':
+
+            return {
+                ...state,
+                status: "New Order successful",
+                isPending: false,
+                isSuccessful: true,
+                // allOrders: [...state.allOrders, [action.orderId, action.user, action.tokenGet, action.amountGet, action.tokenGive, action.amountGive, action.timestamp]]
+                allOrders: [...state.allOrders,
+                {
+                    orderId: action.orderId,
+                    user: action.user,
+                    tokenGet: action.tokenGet,
+                    amountGet: action.amountGet,
+                    tokenGive: action.tokenGive,
+                    amountGive: action.amountGive
+                }]
+
+            }
+        case 'NEW_ORDER_FAILED':
+            return {
+                ...state,
+                status: "New Order failed",
                 isPending: false,
                 isSuccessful: false,
                 isError: true

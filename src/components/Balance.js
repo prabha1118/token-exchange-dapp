@@ -14,7 +14,7 @@ const Balance = () => {
     const dispatch = useDispatch()
 
     const exchange = useSelector(state => state.exchange.contract)
-    const tokens = useSelector(state => state.tokens.contracts)
+    const tokens = useSelector(state => state.tokens.contracts) // Array of token addresses
     const account = useSelector(state => state.provider.account)
 
     const t_symbols = useSelector(state => state.tokens.symbols)
