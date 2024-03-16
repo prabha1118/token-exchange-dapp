@@ -8,13 +8,15 @@ import {
   loadAccount,
   loadTokens,
   loadExchange,
-  subscribeToEvents
+  subscribeToEvents,
+  loadAllOrders
 } from '../store/interactions'
 
 import Navbar from './Navbar';
 import Markets from './Markets';
 import Balance from './Balance';
 import Order from './Order';
+import OrderBook from './OrderBook';
 
 const HelperConfig = require('../HelperConfig.json');
 
@@ -52,6 +54,9 @@ function App() {
     const exchangeAddress = HelperConfig[chainId].exchangeAddress
     await loadExchange(provider, exchangeAddress, dispatch)
 
+    // Fetch all orders: open, filled and cancelled
+    loadAllOrders(provider, exchangeAddress, dispatch)
+
     // Listen to Events
     subscribeToEvents(provider, exchangeAddress, dispatch);
   }
@@ -83,7 +88,7 @@ function App() {
 
           {/* Trades */}
 
-          {/* OrderBook */}
+          <OrderBook />
 
         </section>
       </main>

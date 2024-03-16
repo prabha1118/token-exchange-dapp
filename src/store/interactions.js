@@ -70,6 +70,31 @@ export const subscribeToEvents = (provider, exchangeAddress, dispatch) => {
     })
 }
 
+export const loadAllOrders = async (provider, exchange, dispatch) => {
+    let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
+
+    const block = await provider.getBlockNumber()
+
+    // Fetching Cancelled orders
+    const cancelStream = await exchangeContract.queryFilter('OrderCancelled', 0, block)
+    const cancelledOrders = cancelStream.map(event => event.args)
+
+    dispatch({ type: 'CANCELLED_ORDERS_LOADED', cancelledOrders })
+
+    // Fetching Filled orders
+    const tradeStream = await exchangeContract.queryFilter('TradeSuccessfull', 0, block)
+    const filledOrders = tradeStream.map(event => event.args)
+
+    dispatch({ type: 'FILLED_ORDERS_LOADED', filledOrders })
+
+    // Fetching all orders
+    const orderStream = await exchangeContract.queryFilter('Order', 0, block)
+    const allOrders = orderStream.map(event => event.args)
+
+    dispatch({ type: 'ALL_ORDERS_LOADED', allOrders })
+
+}
+
 export const loadBalances = async (provider, exchange, tokens, account, dispatch) => {
     if (tokens[0]) {
 
