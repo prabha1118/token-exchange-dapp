@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect'
-import { get, groupBy, reject } from 'lodash';
+import { get, groupBy, reject, maxBy, minBy } from 'lodash';
 import moment from 'moment'
 import { ethers } from 'ethers'
 
@@ -104,3 +104,55 @@ const decorateOrderBookOrder = (order, tokens) => {
         orderFillAction: (orderType === 'buy' ? 'sell' : 'buy')
     })
 }
+
+
+export const priceChartSelector = createSelector(filledOrders, tokens, (orders, tokens) => {
+
+    if (!tokens[0] || !tokens[1]) { return }
+
+    // Filter orders for the selected token pair
+    orders = orders.filter((o) => o.tokenGet === tokens[0] || o.tokenGet === tokens[1])
+    orders = orders.filter((o) => o.tokenGive === tokens[0] | o.tokenGive === tokens[1])
+
+    orders = orders.sort((a, b) => a.timestamp - b.timestamp)
+
+    // Decorate Orders
+    orders = orders.map((o) => decorateOrder(o, tokens))
+
+    let secondLastOrder, lastOrder;
+    [secondLastOrder, lastOrder] = orders.slice(orders.length - 2, orders.length)
+
+    const secondLastPrice = get(secondLastOrder, 'tokenPrice', 0)
+    const lastPrice = get(lastOrder, 'tokenPrice', 0)
+
+    return ({
+        lastPrice,
+        lastPriceChange: (lastPrice >= secondLastPrice ? '+' : "-"),
+        series: [{
+            data: buildGraphData(orders)
+        }]
+    })
+})
+
+const buildGraphData = (orders) => {
+    orders = groupBy(orders, (o) => moment.unix(o.timestamp).startOf('hour').format())
+
+    // Get each hour where data exists
+    const hours = Object.keys(orders)
+
+    const graphData = hours.map((hour) => {
+        const group = orders[hour]
+
+        const open = group[0]
+        const high = maxBy(group, 'tokenPrice')
+        const low = minBy(group, 'tokenPrice')
+        const close = group[group.length - 1]
+
+        return ({
+            x: new Date(hour),
+            y: [open.tokenPrice, high.tokenPrice, low.tokenPrice, close.tokenPrice]
+        })
+    })
+
+    return graphData
+} 
