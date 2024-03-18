@@ -18,6 +18,7 @@ import Balance from './Balance';
 import Order from './Order';
 import OrderBook from './OrderBook';
 import PriceChart from './PriceChart';
+import Trades from './Trades';
 
 const HelperConfig = require('../HelperConfig.json');
 
@@ -87,7 +88,7 @@ function App() {
 
           {/* Transactions */}
 
-          {/* Trades */}
+          <Trades />
 
           <OrderBook />
 
