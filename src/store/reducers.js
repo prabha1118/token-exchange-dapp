@@ -146,7 +146,7 @@ export const exchange = (state = { loaded: false, contract: {}, allOrders: [] },
                 isPending: false,
                 isSuccessful: true,
                 // allOrders: [...state.allOrders, [action.orderId, action.user, action.tokenGet, action.amountGet, action.tokenGive, action.amountGive, action.timestamp]]
-                allOrders: [...state.allOrders,
+                order:
                 {
                     orderId: action.orderId,
                     user: action.user,
@@ -154,7 +154,7 @@ export const exchange = (state = { loaded: false, contract: {}, allOrders: [] },
                     amountGet: action.amountGet,
                     tokenGive: action.tokenGive,
                     amountGive: action.amountGive
-                }]
+                }
 
             }
         case 'NEW_ORDER_FAILED':

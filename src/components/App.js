@@ -58,7 +58,7 @@ function App() {
     await loadExchange(provider, exchangeAddress, dispatch)
 
     // Fetch all orders: open, filled and cancelled
-    loadAllOrders(provider, exchangeAddress, dispatch)
+    await loadAllOrders(provider, exchangeAddress, dispatch)
 
     // Listen to Events
     subscribeToEvents(provider, exchangeAddress, dispatch);

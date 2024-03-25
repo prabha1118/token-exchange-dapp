@@ -21,7 +21,6 @@ const openOrders = state => {
     const openOrders = reject(all, (order) => {
         const orderFilled = filled.some((o) => o.id.toString() === order.id.toString())
         const orderCancelled = cancelled.some((o) => o.id.toString() === order.id.toString())
-        console.log("Hi ra...")
         return (orderFilled || orderCancelled)
     })
 
@@ -104,7 +103,7 @@ export const filledOrdersSelector = createSelector(filledOrders, tokens, (orders
     // Decorate Orders
     orders = decorateFilledOrders(orders, tokens)
 
-    // Sort orders by time descending
+    // Sort orders by time descending 
     orders = orders.sort((a, b) => b.timestamp - a.timestamp)
 
     console.log(orders)
@@ -144,6 +143,50 @@ const tokenPriceClass = (tokenPrice, orderId, previousOrder) => {
     } else {
         return RED
     }
+}
+
+export const myFilledOrdersSelector = createSelector(account, tokens, filledOrders, (account, tokens, orders) => {
+    if (!tokens[0] || !tokens[1]) { return }
+
+    // Filter orders by current account user
+    orders = orders.filter((o) => o.seller === account || o.buyer === account)
+
+    // Filter orders for the selected token pair
+    orders = orders.filter((o) => o.tokenGet === tokens[0] || o.tokenGet === tokens[1])
+    orders = orders.filter((o) => o.tokenGive === tokens[0] | o.tokenGive === tokens[1])
+
+    // Decorate orders
+    orders = decorateMyFilledOrders(orders, account, tokens)
+
+    orders = orders.sort((a, b) => b.timestamp - a.timestamp)
+    return orders
+})
+
+const decorateMyFilledOrders = (orders, account, tokens) => {
+    return (
+        orders.map((order) => {
+            order = decorateOrder(order, tokens)
+            order = decorateMyFilledOrder(order, account, tokens)
+            return order
+        })
+    )
+}
+
+const decorateMyFilledOrder = (order, account, tokens) => {
+    const myOrder = order.seller === account
+    let orderType
+    if (myOrder) {
+        orderType = order.tokenGive === tokens[1] ? "buy" : "sell"
+    } else {
+        orderType = order.tokenGive === tokens[1] ? "sell" : "buy"
+    }
+
+    return ({
+        ...order,
+        orderType,
+        orderClass: (orderType === 'buy' ? GREEN : RED),
+        orderSign: (orderType === 'buy' ? '+' : '-')
+    })
 }
 
 export const orderBookSelector = createSelector(openOrders, tokens, (orders, tokens) => {

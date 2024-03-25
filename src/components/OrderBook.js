@@ -49,7 +49,7 @@ const OrderBook = () => {
                     <p className="flex-center">No Buy Orders</p>
                 ) : (
                     <table className='exchange__orderbook--sell'>
-                        <caption>Selling</caption>
+                        <caption>Buying</caption>
                         <thead>
                             <tr>
                                 <th>{t_symbols && t_symbols[0]}<img src={sort} alt='Sort' /></th>
