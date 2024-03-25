@@ -95,6 +95,37 @@ export const exchange = (state = { loaded: false, contract: {}, allOrders: [] },
                     data: action.filledOrders
                 }
             }
+        case 'ORDER_CANCEL_REQUEST':
+            return {
+                ...state,
+                status: "Cancel Order request",
+                isPending: true,
+                isSuccessful: false
+            }
+        case 'ORDER_CANCEL_SUCCESSFULL':
+            return {
+                ...state,
+                status: "Order Cancel successful",
+                isPending: false,
+                isSuccessful: true,
+                order:
+                {
+                    orderId: action.orderId,
+                    user: action.user,
+                    tokenGet: action.tokenGet,
+                    amountGet: action.amountGet,
+                    tokenGive: action.tokenGive,
+                    amountGive: action.amountGive
+                }
+            }
+        case 'ORDER_CANCEL_FAILED':
+            return {
+                ...state,
+                status: "Order Cancel failed",
+                isPending: false,
+                isSuccessful: false,
+                isError: true
+            }
         case 'EXCHANGE_CMRD_TOKEN_BALANCE_LOADED':
             return {
                 ...state,
@@ -145,7 +176,6 @@ export const exchange = (state = { loaded: false, contract: {}, allOrders: [] },
                 status: "New Order successful",
                 isPending: false,
                 isSuccessful: true,
-                // allOrders: [...state.allOrders, [action.orderId, action.user, action.tokenGet, action.amountGet, action.tokenGive, action.amountGive, action.timestamp]]
                 order:
                 {
                     orderId: action.orderId,
@@ -155,7 +185,6 @@ export const exchange = (state = { loaded: false, contract: {}, allOrders: [] },
                     tokenGive: action.tokenGive,
                     amountGive: action.amountGive
                 }
-
             }
         case 'NEW_ORDER_FAILED':
             return {

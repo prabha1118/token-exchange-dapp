@@ -65,8 +65,10 @@ export const subscribeToEvents = (provider, exchangeAddress, dispatch) => {
 
     exchangeContract.on('Order', (orderId, user, tokenGet, amountGet, tokenGive, amountGive, timestamp) => {
         dispatch({ type: 'NEW_ORDER_SUCCESSFULL', orderId: orderId.toString(), user: user.toString(), tokenGet: (tokenGet.toString()), amountGet: (amountGet.toString()), tokenGive: (tokenGive.toString()), amountGive: (amountGive.toString()) })
-        // dispatch({ type: 'NEW_ORDER_SUCCESSFULL', orderId, user, tokenGet, amountGet, tokenGive, amountGive, timestamp })
+    })
 
+    exchangeContract.on('OrderCancelled', (orderId, user, tokenGet, amountGet, tokenGive, amountGive, timestamp) => {
+        dispatch({ type: 'ORDER_CANCEL_SUCCESSFULL', orderId: orderId.toString(), user: user.toString(), tokenGet: (tokenGet.toString()), amountGet: (amountGet.toString()), tokenGive: (tokenGive.toString()), amountGive: (amountGive.toString()) })
     })
 }
 
@@ -208,5 +210,21 @@ export const makeSellOrder = async (provider, exchange, tokens, order, dispatch)
         await tx.wait()
     } catch (error) {
         dispatch({ type: 'NEW_ORDER_FAILED' })
+    }
+}
+
+export const cancelOrder = async (provider, exchange, order, dispatch) => {
+
+    dispatch({ type: 'ORDER_CANCEL_REQUEST' })
+
+    try {
+        const signer = await provider.getSigner()
+
+        let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
+
+        let tx = await exchangeContract.connect(signer).cancelOrder(order.id)
+        await tx.wait()
+    } catch (error) {
+        dispatch({ type: 'ORDER_CANCEL_FAILED' })
     }
 }
