@@ -55,20 +55,24 @@ export const subscribeToEvents = (provider, exchangeAddress, dispatch) => {
 
     let exchangeContract = new ethers.Contract(exchangeAddress, EXCHANGE_ABI, provider)
 
-    exchangeContract.on('TokensDeposited', (token, user, amount) => {
-        dispatch({ type: 'TRANSFER_SUCCESSFUL' })
+    exchangeContract.on('TokensDeposited', (token, user, amount, event) => {
+        dispatch({ type: 'TRANSFER_SUCCESSFUL', event })
     })
 
-    exchangeContract.on('TokensWithdrawn', (token, user, amount) => {
-        dispatch({ type: 'TRANSFER_SUCCESSFUL' })
+    exchangeContract.on('TokensWithdrawn', (token, user, amount, event) => {
+        dispatch({ type: 'TRANSFER_SUCCESSFUL', event })
     })
 
-    exchangeContract.on('Order', (orderId, user, tokenGet, amountGet, tokenGive, amountGive, timestamp) => {
-        dispatch({ type: 'NEW_ORDER_SUCCESSFULL', orderId: orderId.toString(), user: user.toString(), tokenGet: (tokenGet.toString()), amountGet: (amountGet.toString()), tokenGive: (tokenGive.toString()), amountGive: (amountGive.toString()) })
+    exchangeContract.on('Order', (orderId, user, tokenGet, amountGet, tokenGive, amountGive, timestamp, event) => {
+        const order = event.args
+        // dispatch({ type: 'NEW_ORDER_SUCCESSFULL', orderId: orderId.toString(), user: user.toString(), tokenGet: (tokenGet.toString()), amountGet: (amountGet.toString()), tokenGive: (tokenGive.toString()), amountGive: (amountGive.toString()) })
+        dispatch({ type: 'NEW_ORDER_SUCCESSFULL', order, event })
     })
 
-    exchangeContract.on('OrderCancelled', (orderId, user, tokenGet, amountGet, tokenGive, amountGive, timestamp) => {
-        dispatch({ type: 'ORDER_CANCEL_SUCCESSFULL', orderId: orderId.toString(), user: user.toString(), tokenGet: (tokenGet.toString()), amountGet: (amountGet.toString()), tokenGive: (tokenGive.toString()), amountGive: (amountGive.toString()) })
+    exchangeContract.on('OrderCancelled', (orderId, user, tokenGet, amountGet, tokenGive, amountGive, timestamp, event) => {
+        const order = event.args
+        // dispatch({ type: 'ORDER_CANCEL_SUCCESSFULL', orderId: orderId.toString(), user: user.toString(), tokenGet: (tokenGet.toString()), amountGet: (amountGet.toString()), tokenGive: (tokenGive.toString()), amountGive: (amountGive.toString()) })
+        dispatch({ type: 'ORDER_CANCEL_SUCCESSFULL', order, event })
     })
 }
 
@@ -150,7 +154,7 @@ export const depositTokens = async (provider, exchange, transferType, token, amo
 
 export const withdrawTokens = async (provider, exchange, transferType, token, amount, dispatch) => {
 
-    dispatch({ type: "TRANSFER_IN_PROGRESS" })
+    dispatch({ type: "TRANSFER_REQUEST" })
 
     try {
         let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)

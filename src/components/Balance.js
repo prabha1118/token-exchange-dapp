@@ -21,7 +21,7 @@ const Balance = () => {
     const t_balances = useSelector(state => state.tokens.balances)
     const e_balances = useSelector(state => state.exchange.balances)
 
-    const transferStatus = useSelector(state => state.exchange.isPending)
+    const transferStatus = useSelector(state => state.exchange.transferInProgress)
 
     // console.log(typeof (t_balances[0]));
 

@@ -63,7 +63,20 @@ export const tokens = (state = { loaded: false, contracts: [], symbols: [] }, ac
     }
 }
 
-export const exchange = (state = { loaded: false, contract: {}, allOrders: [] }, action) => {
+const DEFAULT_EXCHANGE_STATE = {
+    loaded: false,
+    contract: {},
+    allOrders: {
+        loaded: false,
+        data: []
+    },
+    transaction: {
+        isSuccessful: false
+    },
+    events: []
+}
+
+export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
     switch (action.type) {
         case 'EXCHANGE_LOADED':
             return {
@@ -98,33 +111,35 @@ export const exchange = (state = { loaded: false, contract: {}, allOrders: [] },
         case 'ORDER_CANCEL_REQUEST':
             return {
                 ...state,
-                status: "Cancel Order request",
-                isPending: true,
-                isSuccessful: false
+                transaction: {
+                    status: "Cancel Order request",
+                    isPending: true,
+                    isSuccessful: false
+                }
             }
         case 'ORDER_CANCEL_SUCCESSFULL':
             return {
                 ...state,
-                status: "Order Cancel successful",
-                isPending: false,
-                isSuccessful: true,
-                order:
-                {
-                    orderId: action.orderId,
-                    user: action.user,
-                    tokenGet: action.tokenGet,
-                    amountGet: action.amountGet,
-                    tokenGive: action.tokenGive,
-                    amountGive: action.amountGive
-                }
+                transaction: {
+                    status: "Order Cancel successful",
+                    isPending: false,
+                    isSuccessful: true
+                },
+                cancelledOrders: {
+                    ...state.cancelledOrders,
+                    data: [...state.cancelledOrders.data, action.order]
+                },
+                events: [...state.events, action.event]
             }
         case 'ORDER_CANCEL_FAILED':
             return {
                 ...state,
-                status: "Order Cancel failed",
-                isPending: false,
-                isSuccessful: false,
-                isError: true
+                transaction: {
+                    status: "Order Cancel failed",
+                    isPending: false,
+                    isSuccessful: false,
+                    isError: true
+                }
             }
         case 'EXCHANGE_CMRD_TOKEN_BALANCE_LOADED':
             return {
@@ -138,63 +153,88 @@ export const exchange = (state = { loaded: false, contract: {}, allOrders: [] },
             }
 
 
-        case 'TRANSFER_IN_PROGRESS':
+        case 'TRANSFER_REQUEST':
             return {
                 ...state,
-                status: "Transfer in progress",
-                isPending: true,
-                isSuccessful: false
+                transaction: {
+                    status: "Transfer in progress",
+                    isPending: true,
+                    isSuccessful: false
+                },
+                transferInProgress: true
             }
         case 'TRANSFER_SUCCESSFUL':
             return {
                 ...state,
-                status: "Transfer successful",
-                isPending: false,
-                isSuccessful: true
+                transaction: {
+                    status: "Transfer successful",
+                    isPending: false,
+                    isSuccessful: true
+                },
+                transferInProgress: false,
+                events: [...state.events, action.event]
             }
         case 'TRANSFER_FAILED':
             return {
                 ...state,
-                status: "Transfer failed",
-                isPending: false,
-                isSuccessful: false,
-                isError: true
+                transaction: {
+                    status: "Transfer failed",
+                    isPending: false,
+                    isSuccessful: false,
+                    isError: true
+                },
+                transferInProgress: false
             }
 
 
         case 'NEW_ORDER_REQUEST':
             return {
                 ...state,
-                status: "New Order request",
-                isPending: true,
-                isSuccessful: false
+                transaction: {
+                    status: "New Order request",
+                    isPending: true,
+                    isSuccessful: false
+                },
             }
         case 'NEW_ORDER_SUCCESSFULL':
 
             return {
                 ...state,
-                status: "New Order successful",
-                isPending: false,
-                isSuccessful: true,
-                order:
-                {
-                    orderId: action.orderId,
-                    user: action.user,
-                    tokenGet: action.tokenGet,
-                    amountGet: action.amountGet,
-                    tokenGive: action.tokenGive,
-                    amountGive: action.amountGive
-                }
+                transaction: {
+                    status: "New Order successful",
+                    isPending: false,
+                    isSuccessful: true
+                },
+                allOrders: {
+                    ...state.allOrders,
+                    data: [...state.allOrders.data, action.order]
+                },
+                events: [...state.events, action.event]
             }
         case 'NEW_ORDER_FAILED':
             return {
                 ...state,
-                status: "New Order failed",
-                isPending: false,
-                isSuccessful: false,
-                isError: true
+                transaction: {
+                    status: "New Order failed",
+                    isPending: false,
+                    isSuccessful: false,
+                    isError: true
+                },
+
             }
         default:
             return state
     }
 }
+
+// 'Im changing the code'
+
+//order:
+// {
+//     orderId: action.orderId,
+//     user: action.user,
+//     tokenGet: action.tokenGet,
+//     amountGet: action.amountGet,
+//     tokenGive: action.tokenGive,
+//     amountGive: action.amountGive
+// }
