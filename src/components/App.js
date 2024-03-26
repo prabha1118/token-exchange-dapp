@@ -20,6 +20,7 @@ import OrderBook from './OrderBook';
 import PriceChart from './PriceChart';
 import Trades from './Trades';
 import Transactions from './Transactions';
+import Alert from './Alert'
 
 const HelperConfig = require('../HelperConfig.json');
 
@@ -51,7 +52,6 @@ function App() {
     const comradeTokenAddress = HelperConfig[chainId].comradeTokenAddress
     const mETHTokenAddress = HelperConfig[chainId].mETHTokenAddress
     const mDaiTokenAddress = HelperConfig[chainId].mDaiTokenAddress
-    // await loadTokens(provider, [comradeTokenAddress, mETHTokenAddress, mDaiTokenAddress], dispatch)
 
     // Load the Exchange contract
     const exchangeAddress = HelperConfig[chainId].exchangeAddress
@@ -96,7 +96,7 @@ function App() {
         </section>
       </main>
 
-      {/* Alert */}
+      <Alert />
 
     </div>
   );

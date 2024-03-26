@@ -133,7 +133,7 @@ export const loadBalances = async (provider, exchange, tokens, account, dispatch
 
 export const depositTokens = async (provider, exchange, transferType, token, amount, dispatch) => {
 
-    dispatch({ type: "TRANSFER_IN_PROGRESS" })
+    dispatch({ type: "TRANSFER_REQUEST" })
 
     try {
         let tokenContract = new ethers.Contract(token, TOKEN_ABI, provider)
@@ -148,9 +148,6 @@ export const depositTokens = async (provider, exchange, transferType, token, amo
 
         tx = await exchangeContract.connect(signer).depositTokens(token, amountToDeposit)
         await tx.wait()
-
-        console.log("Tokens deposited.")
-        console.log(ethers.utils.formatUnits(await exchangeContract.depositedAmount(token, await signer.getAddress()), 18))
 
     } catch (error) {
         dispatch({ type: 'TRANSFER_FAILED' })
@@ -171,8 +168,6 @@ export const withdrawTokens = async (provider, exchange, transferType, token, am
         let tx = await exchangeContract.connect(signer).withdrawTokens(token, amountToWithdraw)
         await tx.wait()
 
-        console.log("Tokens withdrawn.")
-
     } catch (error) {
         dispatch({ type: 'TRANSFER_FAILED' })
     }
@@ -186,7 +181,6 @@ export const makeBuyOrder = async (provider, exchange, tokens, order, dispatch) 
     const amountGive = ethers.utils.parseUnits((order.amount * order.price).toString(), 18)
 
     dispatch({ type: 'NEW_ORDER_REQUEST' })
-    console.log('hi')
 
     try {
         const signer = await provider.getSigner()
@@ -208,7 +202,6 @@ export const makeSellOrder = async (provider, exchange, tokens, order, dispatch)
     const amountGive = ethers.utils.parseUnits(order.amount, 18)
 
     dispatch({ type: 'NEW_ORDER_REQUEST' })
-    console.log('hi2')
 
     try {
         const signer = await provider.getSigner()

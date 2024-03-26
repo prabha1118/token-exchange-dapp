@@ -10,7 +10,7 @@ const Markets = () => {
 
     async function MarketHandler(e) {
         const againProvider = await loadProvider(dispatch);
-        console.log(e.target.value.split(','));
+        // console.log(e.target.value.split(','));
         const tokens = await loadTokens(againProvider, e.target.value.split(',').map(item => item.trim()), dispatch);
     }
 

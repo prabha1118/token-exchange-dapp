@@ -8,29 +8,6 @@ import { loadProvider, loadAccount } from '../store/interactions.js';
 
 const Navbar = () => {
 
-    // let provider;
-    // const provider = useSelector(state => state.provider.provider)
-    // const account = useSelector(state => state.provider.account)
-    // const balance = useSelector(state => state.provider.balance)
-
-    // const dispatch = useDispatch()
-
-    // const providerHandler = async () => {
-    //     provider = await loadProvider(dispatch)
-    // }
-
-    // const connectHandler = async () => {
-    //     providerHandler()
-    //     await loadAccount(provider, dispatch)
-    // }
-
-    // const fullProvider = new ethers.providers.Web3Provider(provider.connection);
-
-    // const connectHandler = async () => {
-    //     await loadAccount(fullProvider, dispatch)
-    // }
-
-
     const { provider, account, chainId, balance } = useSelector(state => state.provider);
     const dispatch = useDispatch();
 

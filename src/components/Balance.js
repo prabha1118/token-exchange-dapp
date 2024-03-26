@@ -23,8 +23,6 @@ const Balance = () => {
 
     const transferStatus = useSelector(state => state.exchange.transferInProgress)
 
-    // console.log(typeof (t_balances[0]));
-
     const depositRef = useRef(null)
     const withdrawRef = useRef(null)
 
@@ -65,7 +63,6 @@ const Balance = () => {
 
     const withdrawHandler = async (e, token) => {
         e.preventDefault();
-        console.log("withdrawing...")
         if (token === tokens[0]) {
             const provider = await loadProvider(dispatch);
             withdrawTokens(provider, exchange, "Withdraw", token, token1TransferAmount, dispatch)
@@ -94,36 +91,6 @@ const Balance = () => {
 
         }
     }, [account, tokens, exchange, dispatch, transferStatus]);
-
-    // const dispatch = useDispatch();
-
-    // const [account, setAccount] = useState(null);
-    // const exchange = useSelector(state => state.exchange.contract);
-    // const tokens = useSelector(state => state.tokens.contracts);
-    // console.log(tokens)
-
-    // const _provider = async () => {
-    //     const provider = await loadProvider(dispatch);
-    //     return provider;
-    // }
-
-
-    // useEffect(() => {
-    //     if (!account) {
-    //         const loadProviderAndAccount = async () => {
-    //             const loadedAccount = await loadAccount(_provider, dispatch);
-    //             setAccount(loadedAccount);
-    //         };
-    //         loadProviderAndAccount();
-    //     }
-    // }, [account, dispatch]);
-
-    // useEffect(() => {
-    //     if (exchange && tokens[0] && tokens[1] && account) {
-
-    //         loadBalances(_provider, exchange, tokens, account, dispatch);
-    //     }
-    // }, [tokens, exchange, account, dispatch]);
 
 
     return (

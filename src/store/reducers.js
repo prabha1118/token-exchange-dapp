@@ -170,7 +170,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                     ...state.filledOrders,
                     data: [...state.filledOrders.data, action.order]
                 },
-                events: [...state.events, action.event]
+                events: [action.event, ...state.events]
             }
         case 'ORDER_FILL_FAILED':
             return {
@@ -213,7 +213,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                     isSuccessful: true
                 },
                 transferInProgress: false,
-                events: [...state.events, action.event]
+                events: [action.event, ...state.events]
             }
         case 'TRANSFER_FAILED':
             return {
@@ -250,7 +250,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                     ...state.allOrders,
                     data: [...state.allOrders.data, action.order]
                 },
-                events: [...state.events, action.event]
+                events: [action.event, ...state.events]
             }
         case 'NEW_ORDER_FAILED':
             return {

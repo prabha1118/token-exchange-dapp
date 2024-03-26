@@ -9,7 +9,7 @@
     },
     "11155111": {
         "chain_hex_id": "0xAA36A7",
-        "explorerURL": "https://sepolia.etherscan.io/address/",
+        "explorerURL": "https://sepolia.etherscan.io/",
         "comradeTokenAddress": "0x65628E201C0F23e6b9F4C1f577abc85f4C9c2C7d",
         "mETHTokenAddress": "0x7c7b405AA899da2070f1cD7Db7f00602D59FD3f2",
         "mDaiTokenAddress": "0x949BbaC03CD844629B173354c420d9f5a7A79972",

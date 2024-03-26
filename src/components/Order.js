@@ -31,7 +31,6 @@ const Order = () => {
 
     const buyHandler = async (e) => {
         e.preventDefault();
-        console.log('buying...')
         const provider = await loadProvider(dispatch);
         makeBuyOrder(provider, exchange, tokens, { amount, price }, dispatch)
 
@@ -41,7 +40,6 @@ const Order = () => {
 
     const sellHandler = async (e) => {
         e.preventDefault();
-        console.log('selling...')
         const provider = await loadProvider(dispatch);
         makeSellOrder(provider, exchange, tokens, { amount, price }, dispatch)
 
