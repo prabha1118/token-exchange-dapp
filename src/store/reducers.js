@@ -70,6 +70,14 @@ const DEFAULT_EXCHANGE_STATE = {
         loaded: false,
         data: []
     },
+    filledOrders: {
+        loaded: false,
+        data: []
+    },
+    cancelledOrders: {
+        loaded: false,
+        data: []
+    },
     transaction: {
         isSuccessful: false
     },
@@ -136,6 +144,39 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                 ...state,
                 transaction: {
                     status: "Order Cancel failed",
+                    isPending: false,
+                    isSuccessful: false,
+                    isError: true
+                }
+            }
+        case 'ORDER_FILL_REQUEST':
+            return {
+                ...state,
+                transaction: {
+                    status: "Fill Order Request",
+                    isPending: true,
+                    isSuccessful: false
+                }
+            }
+        case 'ORDER_FILL_SUCCESSFULL':
+            return {
+                ...state,
+                transaction: {
+                    status: "Fill Order Successfull",
+                    isPending: false,
+                    isSuccessfull: true
+                },
+                filledOrders: {
+                    ...state.filledOrders,
+                    data: [...state.filledOrders.data, action.order]
+                },
+                events: [...state.events, action.event]
+            }
+        case 'ORDER_FILL_FAILED':
+            return {
+                ...state,
+                transaction: {
+                    status: "Fill Order Failed",
                     isPending: false,
                     isSuccessful: false,
                     isError: true
@@ -226,15 +267,3 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
             return state
     }
 }
-
-// 'Im changing the code'
-
-//order:
-// {
-//     orderId: action.orderId,
-//     user: action.user,
-//     tokenGet: action.tokenGet,
-//     amountGet: action.amountGet,
-//     tokenGive: action.tokenGive,
-//     amountGive: action.amountGive
-// }

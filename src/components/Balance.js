@@ -93,7 +93,7 @@ const Balance = () => {
             providerAndBalances();
 
         }
-    }, [tokens, exchange, dispatch, transferStatus]);
+    }, [account, tokens, exchange, dispatch, transferStatus]);
 
     // const dispatch = useDispatch();
 

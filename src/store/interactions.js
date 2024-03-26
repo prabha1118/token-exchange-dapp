@@ -74,6 +74,11 @@ export const subscribeToEvents = (provider, exchangeAddress, dispatch) => {
         // dispatch({ type: 'ORDER_CANCEL_SUCCESSFULL', orderId: orderId.toString(), user: user.toString(), tokenGet: (tokenGet.toString()), amountGet: (amountGet.toString()), tokenGive: (tokenGive.toString()), amountGive: (amountGive.toString()) })
         dispatch({ type: 'ORDER_CANCEL_SUCCESSFULL', order, event })
     })
+
+    exchangeContract.on('TradeSuccessfull', (id, seller, buyer, tokenGet, amountGet, tokenGive, amountGive, timestamp, event) => {
+        const order = event.args
+        dispatch({ type: 'ORDER_FILL_SUCCESSFULL', order, event })
+    })
 }
 
 export const loadAllOrders = async (provider, exchange, dispatch) => {
@@ -230,5 +235,21 @@ export const cancelOrder = async (provider, exchange, order, dispatch) => {
         await tx.wait()
     } catch (error) {
         dispatch({ type: 'ORDER_CANCEL_FAILED' })
+    }
+}
+
+export const fillOrder = async (provider, exchange, order, dispatch) => {
+
+    dispatch({ type: 'ORDER_FILL_REQUEST' })
+
+    try {
+        const signer = await provider.getSigner()
+
+        let exchangeContract = new ethers.Contract(exchange, EXCHANGE_ABI, provider)
+
+        let tx = await exchangeContract.connect(signer).fillOrder(order.id)
+        await tx.wait()
+    } catch (error) {
+        dispatch({ type: 'ORDER_FILL_FAILED' })
     }
 }
